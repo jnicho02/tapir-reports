@@ -1,8 +1,10 @@
 # Tapir::Reports
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/tapir/reports`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem is created by report generation professional Jez Nicholson. He has created report builder systems used by environmental consultancies in the UK for the past 13 years. His software has generated over 1 million professional paid-for report documents.
 
-TODO: Delete this and the text above, and describe your gem
+When you want to generate a pdf or Word document populated with data then the normal method is use of a DSL to specify it in code. This can cause a bottleneck at the Developer and be unfriendly to the Product Manager trying to create a report. Sometimes a preferably approach is to create a template document containing markup and mash this with the data.
+
+This gem uses standard ruby templating languages (like erb) embedded inside Word documents.
 
 ## Installation
 
@@ -32,5 +34,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/tapir-reports.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/jnicho02/tapir-reports. Companies may sponsor a feature request by contacting Jez at TapirTech.

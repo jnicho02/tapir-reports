@@ -9,9 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jez Nicholson"]
   spec.email         = ["jez.nicholson@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Generate professional quality report documents by transforming Word or OpenOffice templates with data}
+  spec.description   = %q{This gem follows a simple premise of transforming a template created in a standard word processing package (such as Word) by embedding standard ruby templating language (like erb) inside the document. As the input template is a real document, using the version that you presumably want we don't have to store all the details.
+    TapirTech Ltd retain copyright of the gem and allow you to use it on your own project free of charge. You are strongly encouraged to send us your enhancements. Alternatively, you can sponsor and enhancement or you can use our paid-for document generation service. }
+  spec.homepage      = "https://github.com/jnicho02/tapir-reports"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
