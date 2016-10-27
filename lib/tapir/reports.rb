@@ -1,4 +1,5 @@
-require "tapir/reports/version"
+require 'tapir/reports/version'
+require 'tapir/reports/template'
 
 module Tapir
   module Reports
