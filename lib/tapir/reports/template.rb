@@ -46,19 +46,17 @@ module Tapir
 #TODO: levelling
 
             data = JSON.parse(json_string, object_class: OpenStruct)
-#            object = OpenStruct.new(name: 'Joan', last: 'Maragall'
-            puts data.person
-            puts ERB.new("Hello <%= person %>").result(data.instance_eval { binding })
-
-            puts "content b4 = #{content}"
+#            puts data.person
+#            puts ERB.new("Hello <%= person %>").result(data.instance_eval { binding })
+#            puts "content b4 = #{content}"
 
             content.gsub!('&lt;%=','<%=')
             content.gsub!('%&gt;','%>')
 
 #TODO: use something like https://github.com/VisualOn/OpenXmlPowerTools/blob/master/MarkupSimplifier.cs to simplify Word xml
-            puts "content pre = #{content}"
+#            puts "content pre = #{content}"
             content = ERB.new(content).result(data.instance_eval { binding })
-            puts "content after = #{content}"
+#            puts "content after = #{content}"
 
 #              tmpfiles << (file = Tempfile.new("serenity"))
 #              file << out
