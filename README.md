@@ -4,6 +4,8 @@ This gem is created by report generation professional Jez Nicholson. He has crea
 
 When you want to generate a pdf or Word document populated with data then the normal method is use of a DSL to specify it in code. This can cause a bottleneck at the Developer and be unfriendly to the Product Manager trying to create a report. Sometimes a preferably approach is to create a template document containing markup and mash this with the data.
 
+All work is done in memory so that processing can be run on a cloud platform.
+
 This gem uses standard ruby templating languages (like erb) embedded inside Word documents.
 
 ## Installation
