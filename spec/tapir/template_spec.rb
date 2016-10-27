@@ -2,12 +2,11 @@ require 'spec_helper'
 
 describe Tapir::Reports::Template do
   let(:json_string){ '{
-      "person":"Jeff",
-      "lastname":"Durand",
+      "person":"Jez",
+      "lastname":"Nicholson",
       "address": {
-        "street":"22 charlotte rd",
-        "zipcode":"01013",
-        "residents": 3
+        "street":"somewhere",
+        "town":"Brighton"
       }
     }'
   }
@@ -19,7 +18,12 @@ describe Tapir::Reports::Template do
     end
 
     it "should replace an erb tag with data" do
-      expect(template.process(json_string)).to include('Hello Jeff')
+      expect(template.process(json_string)).to include('Hello Jez')
+    end
+
+    it "should be return a working document" do
+#      template.output(json_string)
+#      expect(fixture('mangled.odt')).to zip_entry_contains('content.xml', 'Hello Jez')
     end
   end
 
@@ -30,7 +34,12 @@ describe Tapir::Reports::Template do
     end
 
     it "should replace an erb tag with data" do
-      expect(template.process(json_string)).to include('Hello Jeff')
+      expect(template.process(json_string)).to include('Hello Jez')
+    end
+
+    it "should be return a working document" do
+      template.output(json_string)
+      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
     end
   end
 
