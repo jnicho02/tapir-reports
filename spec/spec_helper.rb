@@ -6,3 +6,7 @@ Dir[File.dirname(__FILE__) + "/support/*.rb"].each {|f| require f}
 def fixture name
   File.join(File.dirname(__FILE__), '..', 'fixtures', name)
 end
+
+def fixture_text name
+  File.read(fixture(name))
+end

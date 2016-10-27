@@ -28,42 +28,33 @@ module Tapir
         end
       end
 
-      def process json_string
-        data = JSON.parse(json_string, object_class: OpenStruct)
-        content = ""
-        Zip::File.open(@template) do |zipfile|
-          filenames.each do |entry|
-            content = zipfile.read(entry)
-            content.gsub!('&lt;%=','<%=')
-            content.gsub!('%&gt;','%>')
+      def process(json, content)
+        content.gsub!('&lt;%=','<%=')
+        content.gsub!('%&gt;','%>')
 #TODO: use something like https://github.com/VisualOn/OpenXmlPowerTools/blob/master/MarkupSimplifier.cs to simplify Word xml
-#            puts "content pre = #{content}"
-            content = ERB.new(content).result(data.instance_eval { binding })
-#            puts "content after = #{content}"
-          end
-        end
-
+        content = ERB.new(content).result(json.instance_eval { binding })
         content
       end
 
-      def output json_string
-        data = JSON.parse(json_string, object_class: OpenStruct)
+      def output(json_string, kitten_image)
+        json = JSON.parse(json_string, object_class: OpenStruct)
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer do |out|
-          @zipfile.entries.each do |e|
-            unless filenames.include?(e.name)
-              out.put_next_entry(e.name)
-              out.write e.get_input_stream.read
-             end
-          end
-
-          filenames.each do |entry|
-            content = @zipfile.read(entry)
-            content.gsub!('&lt;%=','<%=')
-            content.gsub!('%&gt;','%>')
-            content = ERB.new(content).result(data.instance_eval { binding })
-            out.put_next_entry(entry)
-            out.write content
+          @zipfile.entries.each do |entry|
+            if filenames.include?(entry.name)
+              content = @zipfile.read(entry)
+#              content.gsub!('&lt;%=','<%=')
+#              content.gsub!('%&gt;','%>')
+#              content = ERB.new(content).result(data.instance_eval { binding })
+              out.put_next_entry(entry)
+              out.write(process(json,content))
+            elsif entry.name.include?('word/media/image1.jpg')
+              out.put_next_entry(entry)
+              File.open(kitten_image, 'rb') {|input| out.write(input.read)}
+            else
+              out.put_next_entry(entry.name)
+              out.write entry.get_input_stream.read
+            end
           end
         end
 

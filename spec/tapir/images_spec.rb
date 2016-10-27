@@ -1,0 +1,24 @@
+require 'spec_helper'
+
+describe Tapir::Reports::Template do
+  let(:json_string){ '{
+      "person":"Jez",
+      "lastname":"Nicholson",
+      "address": {
+        "street":"somewhere",
+        "town":"Brighton"
+      }
+    }'
+  }
+  let(:kitten_photo){ fixture('193px-Stray_kitten_Rambo001.jpg') }
+
+  context "given a Word Docx template" do
+    let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
+
+    it "should be return a working document" do
+      template.output(json_string, kitten_photo)
+#      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
+    end
+  end
+
+end
