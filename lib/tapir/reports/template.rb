@@ -2,6 +2,7 @@ require 'zip'
 require 'erb'
 require 'json'
 require 'ostruct'
+require 'nokogiri'
 
 module Tapir
   module Reports
@@ -28,12 +29,38 @@ module Tapir
         end
       end
 
+      def word?
+        extension == "docx"
+      end
+
       def process(json, content)
         content.gsub!('&lt;%=','<%=')
         content.gsub!('%&gt;','%>')
 #TODO: use something like https://github.com/VisualOn/OpenXmlPowerTools/blob/master/MarkupSimplifier.cs to simplify Word xml
         content = ERB.new(content).result(json.instance_eval { binding })
         content
+      end
+
+      def image_names
+        names = []
+        @zipfile = Zip::File.open(@template)
+        content = word? ? @zipfile.read('word/document.xml') : @zipfile.read('content.xml')
+        xml = Nokogiri::XML(content)
+        if word?
+          xml.root.add_namespace('xmlns:a','xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
+          xml.xpath("//w:drawing").each do |node|
+            blip = node.xpath("*/wp:docPr")
+            title = blip.attribute('title').value
+            names << title
+          end
+        else
+          xml.xpath("//draw:frame[draw:image]").each do |node|
+            title = node.xpath("svg:title").text
+  #          placeholder_path = node.attribute('href').value
+            names << title
+          end
+        end
+        names
       end
 
       def output(json_string, kitten_image)
@@ -43,9 +70,6 @@ module Tapir
           @zipfile.entries.each do |entry|
             if filenames.include?(entry.name)
               content = @zipfile.read(entry)
-#              content.gsub!('&lt;%=','<%=')
-#              content.gsub!('%&gt;','%>')
-#              content = ERB.new(content).result(data.instance_eval { binding })
               out.put_next_entry(entry)
               out.write(process(json,content))
             elsif entry.name.include?('word/media/image1.jpg')
