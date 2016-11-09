@@ -13,26 +13,6 @@ module Tapir
         @template = template
       end
 
-      def extension
-        @template.split('.').last
-      end
-
-      def filenames
-        case extension
-        when 'odt'
-#          %w(content.xml styles.xml)
-          %w(content.xml)
-        when 'docx'
-          %w(word/document.xml)
-        else
-          []
-        end
-      end
-
-      def word?
-        extension == "docx"
-      end
-
       def process(json, content)
         content.gsub!('&lt;%=','<%=')
         content.gsub!('%&gt;','%>')
@@ -44,33 +24,29 @@ module Tapir
       def image_names
         names = []
         @zipfile = Zip::File.open(@template)
-        content = word? ? @zipfile.read('word/document.xml') : @zipfile.read('content.xml')
+        content = @zipfile.read('word/document.xml')
         xml = Nokogiri::XML(content)
-        if word?
-          xml.root.add_namespace('xmlns:a','xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
-          xml.xpath("//w:drawing").each do |node|
-            blip = node.xpath("*/wp:docPr")
-            title = blip.attribute('title').value
-            names << title
-          end
-        else
-          xml.xpath("//draw:frame[draw:image]").each do |node|
-            title = node.xpath("svg:title").text
-  #          placeholder_path = node.attribute('href').value
-            names << title
-          end
+        xml.root.add_namespace('xmlns:a','xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
+        xml.xpath("//w:drawing").each do |node|
+          blip = node.xpath("*/wp:docPr")
+          title = blip.attribute('title').value
+          names << title
         end
         names
       end
 
-      def filename(image_name)
+      def relationship_id(image_name)
         @zipfile = Zip::File.open(@template)
-        content = word? ? @zipfile.read('word/document.xml') : @zipfile.read('content.xml')
+        content = @zipfile.read('word/document.xml')
         xml = Nokogiri::XML(content)
-        if word?
-          xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
-          return xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
-        end
+        xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
+        xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
+      end
+
+      def url(relationship_id)
+        @zipfile = Zip::File.open(@template)
+        content = @zipfile.read('word/document.xml.rels')
+        xml = Nokogiri::XML(content)
       end
 
       def output(json_string, kitten_image)
@@ -78,7 +54,7 @@ module Tapir
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer do |out|
           @zipfile.entries.each do |entry|
-            if filenames.include?(entry.name)
+            if ['word/document.xml'].include?(entry.name)
               content = @zipfile.read(entry)
               out.put_next_entry(entry)
               out.write(process(json,content))
@@ -92,7 +68,7 @@ module Tapir
           end
         end
 
-        File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/mangled.#{extension}", "wb") {|f| f.write(buffer.string) }
+        File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/mangled.docx", "wb") {|f| f.write(buffer.string) }
       end
     end
   end

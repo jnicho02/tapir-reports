@@ -11,23 +11,8 @@ describe Tapir::Reports::Template do
     }'
   }
 
-  context "given an OpenOffice 4 template" do
-    let(:template) { Tapir::Reports::Template.new(fixture('variables.odt')) }
-    it "should recognise the extension" do
-      expect(template.extension).to eq 'odt'
-    end
-
-    it "should be return a working document" do
-#      template.output(json_string,fixture('193px-Stray_kitten_Rambo001.jpg'))
-#      expect(fixture('mangled.odt')).to zip_entry_contains('content.xml', 'Hello Jez')
-    end
-  end
-
-  context "given a Word Docx template" do
+  context "given a Docx template" do
     let(:template) { Tapir::Reports::Template.new(fixture('variables.docx')) }
-    it "should recognise the extension" do
-      expect(template.extension).to eq "docx"
-    end
 
     it "should be return a working document" do
       template.output(json_string,fixture('193px-Stray_kitten_Rambo001.jpg'))
