@@ -8,9 +8,14 @@ module Tapir
   module Reports
     class Template
       attr_accessor :template
+      attr_accessor :content
 
       def initialize(template)
         @template = template
+        @zipfile = Zip::File.open(@template)
+        @content = @zipfile.read('word/document.xml')
+        @relationships = @zipfile.read('word/_rels/document.xml.rels')
+        @zipfile.close
       end
 
       def process(json, content)
@@ -23,9 +28,7 @@ module Tapir
 
       def image_names
         names = []
-        @zipfile = Zip::File.open(@template)
-        content = @zipfile.read('word/document.xml')
-        xml = Nokogiri::XML(content)
+        xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
         xml.xpath("//w:drawing").each do |node|
           blip = node.xpath("*/wp:docPr")
@@ -36,17 +39,14 @@ module Tapir
       end
 
       def relationship_id(image_name)
-        @zipfile = Zip::File.open(@template)
-        content = @zipfile.read('word/document.xml')
-        xml = Nokogiri::XML(content)
+        xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
         xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
       end
 
       def url(relationship_id)
-        @zipfile = Zip::File.open(@template)
-        content = @zipfile.read('word/document.xml.rels')
-        xml = Nokogiri::XML(content)
+        xml = Nokogiri::XML(@relationships)
+        'word/' + xml.at_xpath("//*[@Id='#{relationship_id}']/@Target")
       end
 
       def output(json_string, kitten_image)
@@ -54,10 +54,9 @@ module Tapir
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer do |out|
           @zipfile.entries.each do |entry|
-            if ['word/document.xml'].include?(entry.name)
-              content = @zipfile.read(entry)
+            if 'word/document.xml' == entry.name
               out.put_next_entry(entry)
-              out.write(process(json,content))
+              out.write(process(json,@content))
             elsif entry.name.include?('word/media/image1.jpg')
               out.put_next_entry(entry)
               File.open(kitten_image, 'rb') {|input| out.write(input.read)}

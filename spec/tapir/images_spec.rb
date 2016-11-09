@@ -21,6 +21,10 @@ describe Tapir::Reports::Template do
     it "should return the second kitten relationship_id" do
       expect(template.relationship_id('@kitten2')).to eq 'rId5'
     end
+
+    it "should return the first kitten url" do
+      expect(template.url('rId4')).to eq 'word/media/image1.jpg'
+    end
   end
 
 end
