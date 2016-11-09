@@ -11,7 +11,7 @@ describe Tapir::Reports::Template do
     }'
   }
 
-  context "given a Docx template" do
+  context "given a document with variable tags in" do
     let(:template) { Tapir::Reports::Template.new(fixture('variables.docx')) }
 
     it "should be return a working document" do

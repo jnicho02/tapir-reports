@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Tapir::Reports::Template do
   let(:kitten_photo){ fixture('193px-Stray_kitten_Rambo001.jpg') }
 
-  context "given a Word Docx template" do
+  context "given a document with images in" do
     let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
 
     it "should find first kitten image" do

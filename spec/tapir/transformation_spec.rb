@@ -11,7 +11,7 @@ describe Tapir::Reports::Template do
     }', object_class: OpenStruct)
   }
 
-  context "given clean Word Docx document.xml" do
+  context "given clean document.xml with variables tags in" do
     let(:template) { Tapir::Reports::Template.new(fixture('variables.docx')) }
     let(:content) { fixture_text('variables_docx/word/document.xml') }
 
