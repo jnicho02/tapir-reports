@@ -63,6 +63,16 @@ module Tapir
         names
       end
 
+      def filename(image_name)
+        @zipfile = Zip::File.open(@template)
+        content = word? ? @zipfile.read('word/document.xml') : @zipfile.read('content.xml')
+        xml = Nokogiri::XML(content)
+        if word?
+          xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
+          return xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
+        end
+      end
+
       def output(json_string, kitten_image)
         json = JSON.parse(json_string, object_class: OpenStruct)
         @zipfile = Zip::File.open(@template)

@@ -1,15 +1,6 @@
 require 'spec_helper'
 
 describe Tapir::Reports::Template do
-  let(:json_string){ '{
-      "person":"Jez",
-      "lastname":"Nicholson",
-      "address": {
-        "street":"somewhere",
-        "town":"Brighton"
-      }
-    }'
-  }
   let(:kitten_photo){ fixture('193px-Stray_kitten_Rambo001.jpg') }
 
   context "given an OpenOffice template" do
@@ -35,9 +26,12 @@ describe Tapir::Reports::Template do
       expect(template.image_names[1]).to eq '@kitten2'
     end
 
-    it "should return a working document" do
-      template.output(json_string, kitten_photo)
-#      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
+    it "should return the first kitten file url" do
+      expect(template.filename('@kitten')).to eq 'rId4'
+    end
+
+    it "should return the second kitten file url" do
+      expect(template.filename('@kitten2')).to eq 'rId5'
     end
   end
 
