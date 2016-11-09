@@ -25,6 +25,18 @@ describe Tapir::Reports::Template do
     it "should return the first kitten url" do
       expect(template.url('rId4')).to eq 'word/media/image1.jpg'
     end
+
+    it "should be return a working document" do
+      json_string = '{}'
+      replacements =
+        [
+          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
+          ['@kitten2', fixture('reclining-kitten.jpg')],
+        ]
+      template.output(json_string, replacements, 'altered-images.docx')
+      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
+    end
+
   end
 
 end
