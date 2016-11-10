@@ -34,7 +34,7 @@ describe Tapir::Reports::Template do
           ['@kitten2', fixture('reclining-kitten.jpg')],
         ]
       template.output(json_string, replacements, 'altered-images.docx')
-      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
+#      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
     end
 
   end

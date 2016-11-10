@@ -18,17 +18,19 @@ module Tapir
         @zipfile.close
       end
 
-      def process(json, content)
+      def render(json, content)
         erb = Template.sanitize(content)
         ERB.new(erb).result(json.instance_eval { binding })
       end
 
       def self.sanitize(content)
-        content = content.gsub(/(&lt;%(.|\s)*%&gt;)/) { |erb|
-          erb.gsub(/(<[^>]*>)/, '')
+        # remove all extraneous Word xml tags between erb start and finish
+        content.gsub!(/(&lt;%(.|\s)*%&gt;)/) { |erb_tag|
+          erb_tag.gsub(/(<[^>]*>)/, '')
         }
         content.gsub!('&lt;%', '<%')
         content.gsub!('%&gt;', '%>')
+        content
       end
 
       def image_names
@@ -72,7 +74,8 @@ module Tapir
           @zipfile.entries.each { |entry|
             if 'word/document.xml' == entry.name
               out.put_next_entry(entry)
-              out.write(process(json, @content))
+              processed_content = render(json, @content)
+              out.write(processed_content)
             elsif urls.include?(entry.name)
               out.put_next_entry(entry)
               File.open(image_replacements2[entry.name], 'rb') {|input| out.write(input.read)}
