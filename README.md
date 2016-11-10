@@ -26,7 +26,29 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Okay, so this is a very early version and the usage may change. Do not use in anger yet!
+
+e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'. Also with text of 'Hello <%= person %>'
+
+```
+  template = Tapir::Reports::Template.new(fixture('images.docx'))
+  json_string =
+    '{
+      "person":"Jez",
+      "lastname":"Nicholson",
+        "address": {
+          "street":"somewhere",
+          "town":"Brighton"
+        }
+    }'
+  replacements =
+    [
+      ['@kitten', File.read('193px-Stray_kitten_Rambo001.jpg')],
+      ['@kitten2', File.read('reclining-kitten.jpg')],
+    ]
+  template.output(json_string, replacements, 'altered-images.docx')
+```
+generates a document with 'Hello Jez' and the images changed to the images provided.
 
 ## Development
 
