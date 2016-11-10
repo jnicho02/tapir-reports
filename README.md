@@ -4,7 +4,7 @@ This gem is created by report generation professional Jez Nicholson. He has crea
 
 When you want to generate a pdf or Word document populated with data then the normal method is use of a DSL to specify it in code. This can cause a bottleneck at the Developer and be unfriendly to the Product Manager trying to create a report. Sometimes a preferably approach is to create a template document containing markup and mash this with the data.
 
-This gem enables you to write standard ruby erb templating code embedded inside Word documents.
+This gem enables you to write standard ruby erb templating code embedded inside Word documents. My experience at writing document templaters has shown me that you start by inventing your own simple tagging language. This gets more complicated as you add more features (e.g. repeating sections) and it is inflexible. However, like writing html pages I would advise that the 'heavy lifting' is done in your ruby code and not the front-end...but if you insist, then you can.
 
 All work is done in memory so that processing can be run on a cloud platform.
 
