@@ -4,9 +4,9 @@ This gem is created by report generation professional Jez Nicholson. He has crea
 
 When you want to generate a pdf or Word document populated with data then the normal method is use of a DSL to specify it in code. This can cause a bottleneck at the Developer and be unfriendly to the Product Manager trying to create a report. Sometimes a preferably approach is to create a template document containing markup and mash this with the data.
 
-All work is done in memory so that processing can be run on a cloud platform.
+This gem enables you to write standard ruby erb templating code embedded inside Word documents. My experience at writing document templaters has shown me that you start by inventing your own simple tagging language. This gets more complicated as you add more features (e.g. repeating sections) and it is inflexible. However, like writing html pages I would advise that the 'heavy lifting' is done in your ruby code and not the front-end...but if you insist, then you can.
 
-This gem uses standard ruby templating languages (like erb) embedded inside Word documents.
+All work is done in memory so that processing can be run on a cloud platform.
 
 ## Installation
 
@@ -26,7 +26,29 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Okay, so this is a very early version and the usage may change. Do not use in anger yet!
+
+e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'. Also with text of 'Hello <%= person %>'
+
+```
+  template = Tapir::Reports::Template.new(File.read('images.docx'))
+  json_string =
+    '{
+      "person":"Jez",
+      "lastname":"Nicholson",
+        "address": {
+          "street":"somewhere",
+          "town":"Brighton"
+        }
+    }'
+  replacements =
+    [
+      ['@kitten', File.read('193px-Stray_kitten_Rambo001.jpg')],
+      ['@kitten2', File.read('reclining-kitten.jpg')],
+    ]
+  template.output(json_string, replacements, 'altered-images.docx')
+```
+generates a document with 'Hello Jez' and the images changed to the images provided.
 
 ## Development
 
