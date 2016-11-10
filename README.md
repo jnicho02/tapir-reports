@@ -31,7 +31,7 @@ Okay, so this is a very early version and the usage may change. Do not use in an
 e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'. Also with text of 'Hello <%= person %>'
 
 ```
-  template = Tapir::Reports::Template.new(fixture('images.docx'))
+  template = Tapir::Reports::Template.new(File.read('images.docx'))
   json_string =
     '{
       "person":"Jez",
