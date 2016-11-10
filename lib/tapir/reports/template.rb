@@ -19,15 +19,16 @@ module Tapir
       end
 
       def process(json, content)
-        content.gsub!('&lt;%=', '<%=')
-        content.gsub!('%&gt;', '%>')
-        content = sanitize(content)
-        ERB.new(content).result(json.instance_eval { binding })
+        erb = Template.sanitize(content)
+        ERB.new(erb).result(json.instance_eval { binding })
       end
 
-      def sanitize(content)
-        #TODO: use something like https://github.com/VisualOn/OpenXmlPowerTools/blob/master/MarkupSimplifier.cs to simplify Word xml
-        content
+      def self.sanitize(content)
+        content = content.gsub(/(&lt;%(.|\s)*%&gt;)/) { |erb|
+          erb.gsub(/(<[^>]*>)/, '')
+        }
+        content.gsub!('&lt;%', '<%')
+        content.gsub!('%&gt;', '%>')
       end
 
       def image_names
@@ -68,18 +69,18 @@ module Tapir
         json = JSON.parse(json_string, object_class: OpenStruct)
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
-          @zipfile.entries.each do |entry|
+          @zipfile.entries.each { |entry|
             if 'word/document.xml' == entry.name
               out.put_next_entry(entry)
-              out.write process(json, @content)
+              out.write(process(json, @content))
             elsif urls.include?(entry.name)
               out.put_next_entry(entry)
               File.open(image_replacements2[entry.name], 'rb') {|input| out.write(input.read)}
             else
               out.put_next_entry(entry.name)
-              out.write entry.get_input_stream.read
+              out.write(entry.get_input_stream.read)
             end
-          end
+          }
         }
         File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(buffer.string) }
       end
