@@ -16,7 +16,7 @@ describe Tapir::Reports::Template do
     let(:content) { fixture_text('variables_docx/word/document.xml') }
 
     it "should replace an erb tag with data" do
-      expect(template.process(json, content)).to include('Hello Jez')
+      expect(template.render(json, content)).to include('Hello Jez')
     end
   end
 
