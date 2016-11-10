@@ -8,6 +8,8 @@ This gem enables you to write standard ruby erb templating code embedded inside 
 
 All work is done in memory so that processing can be run on a cloud platform.
 
+Word is quite gung-ho at sticking extra xml tags into the document.xml, things like marking spelling mistakes (which your tagnames may well look like) or retaining whitespace. We cope with those by stripping any xml that appears between erb start and end tags.
+
 ## Installation
 
 Add this line to your application's Gemfile:
