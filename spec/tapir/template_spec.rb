@@ -31,4 +31,25 @@ describe Tapir::Reports::Template do
     end
   end
 
+  context "given a more complicated document" do
+    let(:template) { Tapir::Reports::Template.new(fixture('products.docx')) }
+
+    it "should be return a working document" do
+      products =
+        '{
+          "title":"Product Report",
+          "products":[
+            {
+              "name":"olives"
+            },
+            {
+              "name":"peaches"
+            }
+          ]
+        }'
+      template.output(products, [], 'mangled_products.docx')
+      expect(fixture('mangled_products.docx')).to zip_entry_contains('word/document.xml', 'olives, peaches')
+    end
+  end
+
 end

@@ -25,7 +25,7 @@ module Tapir
 
       def self.sanitize(content)
         # remove all extraneous Word xml tags between erb start and finish
-        content.gsub!(/(&lt;%(.|\s)*%&gt;)/) { |erb_tag|
+        content.gsub!(/(&lt;%[^%]*%&gt;)/m) { |erb_tag|
           erb_tag.gsub(/(<[^>]*>)/, '')
         }
         content.gsub!('&lt;%', '<%')
@@ -67,7 +67,6 @@ module Tapir
           urls << url_for(rep[0])
           image_replacements2[url_for(rep[0])] = rep[1]
         }
-
         json = JSON.parse(json_string, object_class: OpenStruct)
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
