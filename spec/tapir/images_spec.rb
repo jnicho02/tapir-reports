@@ -33,7 +33,7 @@ describe Tapir::Reports::Template do
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
           ['@kitten2', fixture('reclining-kitten.jpg')],
         ]
-      template.output(json_string, replacements, 'altered-images.docx')
+      template.write_to_file(json_string, replacements, 'altered-images.docx')
 #      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
     end
 

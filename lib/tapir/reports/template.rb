@@ -60,7 +60,7 @@ module Tapir
         url(relationship_id(image_name))
       end
 
-      def output(json_string, image_replacements, output_name)
+      def output(json_string, image_replacements)
         urls = []
         image_replacements2 = {}
         image_replacements.each { |rep|
@@ -84,7 +84,12 @@ module Tapir
             end
           }
         }
-        File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(buffer.string) }
+        return buffer.string
+      end
+
+      def write_to_file(json_string, image_replacements, output_name)
+        s = output(json_string, image_replacements)
+        File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(s) }
       end
     end
   end

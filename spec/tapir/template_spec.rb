@@ -16,7 +16,7 @@ describe Tapir::Reports::Template do
 
     it "should be return a working document" do
       replacements = []
-      template.output(json_string, replacements, 'mangled.docx')
+      template.write_to_file(json_string, replacements, 'mangled.docx')
       expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
     end
   end
@@ -26,7 +26,7 @@ describe Tapir::Reports::Template do
 
     it "should be return a working document" do
       replacements = []
-      template.output(json_string, replacements, 'mangled_messytags.docx')
+      template.write_to_file(json_string, replacements, 'mangled_messytags.docx')
       expect(fixture('mangled_messytags.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
     end
   end
