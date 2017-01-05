@@ -41,7 +41,7 @@ module Tapir
           blip = node.xpath("*/wp:docPr")
           titleAttribute = blip.attribute('title')
           if titleAttribute
-            title = blip.attribute('title').value
+            title = titleAttribute.value
             names << title
           end
         end
@@ -49,6 +49,7 @@ module Tapir
       end
 
       def relationship_id(image_name)
+        puts("looking for " + image_name)
         xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
         xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
