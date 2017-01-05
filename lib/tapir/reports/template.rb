@@ -39,8 +39,11 @@ module Tapir
         xml.root.add_namespace('xmlns:a', 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
         xml.xpath("//w:drawing").each do |node|
           blip = node.xpath("*/wp:docPr")
-          title = blip.attribute('title').value
-          names << title
+          titleAttribute = blip.attribute('title')
+          if titleAttribute
+            title = blip.attribute('title').value
+            names << title
+          end
         end
         names
       end
