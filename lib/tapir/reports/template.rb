@@ -67,7 +67,11 @@ module Tapir
           urls << url_for(rep[0])
           image_replacements2[url_for(rep[0])] = rep[1]
         }
-        json = JSON.parse(json_string, object_class: OpenStruct)
+        begin
+          json = JSON.parse(json_string, object_class: OpenStruct)
+        rescue
+          json = json_string
+        end
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
           @zipfile.entries.each { |entry|

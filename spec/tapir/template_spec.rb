@@ -36,18 +36,18 @@ describe Tapir::Reports::Template do
 
     it "should be return a working document" do
       products =
-        '{
-          "title":"Product Report",
-          "products":[
+        {
+          :title => "Product Report",
+          :products => [
             {
-              "name":"olives"
+              :name => "olives"
             },
             {
-              "name":"peaches"
+              :name => "peaches"
             }
           ]
-        }'
-      template.output(products, [], 'mangled_products.docx')
+        }
+      template.write_to_file(products.to_json, [], 'mangled_products.docx')
       expect(fixture('mangled_products.docx')).to zip_entry_contains('word/document.xml', 'olives, peaches')
     end
   end
