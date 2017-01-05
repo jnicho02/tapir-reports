@@ -1,8 +1,9 @@
-require 'zip'
 require 'erb'
 require 'json'
-require 'ostruct'
 require 'nokogiri'
+require 'open-uri'
+require 'ostruct'
+require 'zip'
 
 module Tapir
   module Reports
@@ -85,7 +86,7 @@ module Tapir
               out.write(processed_content)
             elsif urls.include?(entry.name)
               out.put_next_entry(entry)
-              File.open(image_replacements2[entry.name], 'rb') {|input| out.write(input.read)}
+              open(image_replacements2[entry.name]) {|f| out.write(f.read)}
             else
               out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
