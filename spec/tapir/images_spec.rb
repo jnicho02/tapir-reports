@@ -6,14 +6,6 @@ describe Tapir::Reports::Template do
   context "given a document with images in" do
     let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
 
-    it "should find first kitten image" do
-      expect(template.image_names[0]).to eq '@kitten'
-    end
-
-    it "should find second kitten image" do
-      expect(template.image_names[1]).to eq '@kitten2'
-    end
-
     it "should return the first kitten relationship_id" do
       expect(template.relationship_id('@kitten')).to eq 'rId4'
     end
@@ -31,10 +23,30 @@ describe Tapir::Reports::Template do
       replacements =
         [
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
-          ['@kitten2', fixture('reclining-kitten.jpg')],
+          ['@kitten2', 'https://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
         ]
-      template.write_to_file(json_string, replacements, 'altered-images.docx')
+      template.output(json_string, replacements)
 #      expect(fixture('mangled.docx')).to zip_entry_contains('word/document.xml', 'Hello Jez')
+    end
+
+    it "should be complain about missing images" do
+      json_string = '{}'
+      replacements =
+        [
+          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
+        ]
+      template.output(json_string, replacements)
+    end
+
+    it "should be okay with extra images" do
+      json_string = '{}'
+      replacements =
+        [
+          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
+          ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
+          ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
+        ]
+      template.output(json_string, replacements)
     end
 
   end

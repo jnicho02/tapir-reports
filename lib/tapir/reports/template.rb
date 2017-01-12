@@ -34,26 +34,12 @@ module Tapir
         content
       end
 
-      def image_names
-        names = []
-        xml = Nokogiri::XML(@content)
-        xml.root.add_namespace('xmlns:a', 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main')
-        xml.xpath("//w:drawing").each do |node|
-          blip = node.xpath("*/wp:docPr")
-          titleAttribute = blip.attribute('title')
-          if titleAttribute
-            title = titleAttribute.value
-            names << title
-          end
-        end
-        names
-      end
-
       def relationship_id(image_name)
-        puts("looking for " + image_name)
         xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
-        xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed").value
+        node = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed")
+        nil
+        node.value if node
       end
 
       def url(relationship_id)
@@ -62,15 +48,15 @@ module Tapir
       end
 
       def url_for(image_name)
-        url(relationship_id(image_name))
+        nil
+        url(relationship_id(image_name)) if relationship_id(image_name)
       end
 
       def output(json_string, image_replacements)
-        urls = []
         image_replacements2 = {}
         image_replacements.each { |rep|
-          urls << url_for(rep[0])
-          image_replacements2[url_for(rep[0])] = rep[1]
+          url = url_for(rep[0])
+          image_replacements2[url] = rep[1] if url != nil
         }
         begin
           json = JSON.parse(json_string, object_class: OpenStruct)
@@ -84,7 +70,7 @@ module Tapir
               out.put_next_entry(entry)
               processed_content = render(json, @content)
               out.write(processed_content)
-            elsif urls.include?(entry.name)
+            elsif image_replacements2.keys.include?(entry.name)
               out.put_next_entry(entry)
               open(image_replacements2[entry.name]) {|f| out.write(f.read)}
             else
