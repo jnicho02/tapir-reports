@@ -37,7 +37,9 @@ module Tapir
       def relationship_id(image_name)
         xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
-        node = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]//a:blip/@r:embed")
+        drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]")
+        node = drawing.at_xpath("//a:blip/@r:embed")
+        # if nil then it isn't a picture, it's a border box or something
         nil
         node.value if node
       end
@@ -48,8 +50,9 @@ module Tapir
       end
 
       def url_for(image_name)
+        puts "#{image_name}"
         nil
-        url(relationship_id(image_name)) if relationship_id(image_name)
+        url(relationship_id(image_name)) # if relationship_id(image_name)
       end
 
       def output(json_string, image_replacements)
