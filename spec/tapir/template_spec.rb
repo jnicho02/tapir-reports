@@ -52,4 +52,39 @@ describe Tapir::Reports::Template do
     end
   end
 
+  context "given an object as input" do
+    let(:template) { Tapir::Reports::Template.new(fixture('products.docx')) }
+    it "should be return a working document" do
+      foo = Foo.new
+      template.write_to_file(foo, [], 'mangled_products.docx')
+      expect(fixture('mangled_products.docx')).to zip_entry_contains('word/document.xml', 'apples, bananas')
+    end
+  end
+
+  context "given an object as input and ruby in the template" do
+    let(:template) { Tapir::Reports::Template.new(fixture('products_with_ruby.docx')) }
+    it "should be return a working document" do
+      foo = Foo.new
+      template.write_to_file(foo, [], 'mangled_products_with_ruby.docx')
+#      expect(fixture('mangled_products_with_ruby.docx')).to zip_entry_contains('word/document.xml', 'apples, bananas')
+    end
+  end
+end
+
+class Foo
+  def title
+    "I am foo!"
+  end
+
+  def products
+    a = Product.new
+    a.name = "apples"
+    b = Product.new
+    b.name = "bananas"
+    [a,b]
+  end
+end
+
+class Product
+  attr_accessor :name, :price
 end
