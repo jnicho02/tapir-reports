@@ -1,10 +1,14 @@
 # Tapir::Reports
 
+Write erb in Word documents to use them as templates
+
+## History
 This gem is created by report generation professional Jez Nicholson.
 He has created report builder systems used by environmental consultancies in the
 UK for the past 13 years.
 His software has generated over 1 million professional paid-for report documents.
 
+## Why?
 When you want to generate a pdf or Word document populated with data then the
 normal method is use of a DSL to specify it in code.
 This can cause a bottleneck at the Developer and be unfriendly to the Product
@@ -54,25 +58,42 @@ e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'.
 Also with text of 'Hello <%= person %>'
 
 ```
-  template = Tapir::Reports::Template.new(File.read('images.docx'))
-  json_string =
-    '{
-      "person":"Jez",
-      "lastname":"Nicholson",
-        "address": {
-          "street":"somewhere",
-          "town":"Brighton"
-        }
-    }'
-  replacements =
+  template = Tapir::Reports::Template.new('images.docx')
+```
+or maybe it is in a Rails app folder?
+```
+  template = Tapir::Reports::Template.new('app/assets/images/kennel_times.docx')
+```
+anything that is a variable in the method is accessible from the current 'binder'
+object of your class. Pass the binder to tapir-reports and any variable can then
+be used in erb in the Word template
+
+Images are currently replaced by setting the alt text in Word to a value, e.g.
+'@kitten2' which matches the array of image_replacements. This suxx, and I will
+be rewriting this next. I will probably let you declare an image_tag in the alt
+text which will then become the main image.
+```
+  @title = "My document"
+  image_replacements =
     [
       ['@kitten', File.read('193px-Stray_kitten_Rambo001.jpg')],
       ['@kitten2', File.read('reclining-kitten.jpg')],
     ]
-  template.output(json_string, replacements, 'altered-images.docx')
+  s = template.output(binder, image_replacements)
 ```
-generates a document with 'Hello Jez' and the images changed to the images provided.
-
+You could then write it to a File
+```
+  File.open("/Users/me/Downloads/my_new_doc.docx", "wb") {|f| f.write(s) }
+```
+or if you are in Rails you might want to stream it straight back to the user
+```
+send_data s, filename: "a_new.docx", type: :docx, disposition: :inline
+```
+if you are streaming it from Rails then you might want to declare the mimetype
+so that you can do a respond_to do |format| for .docx
+```
+Mime::Type.register "application/vnd.openxmlformats-officedocument.wordprocessingml.document", :docx
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
