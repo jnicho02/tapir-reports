@@ -19,6 +19,13 @@ consultancy reports where people are going to add their freeform commentary or
 remove/add sections for individual reports then you can't go straight to pdf
 * I love OpenOffice.org, but my business customers do not. They want to use a
 familiar tool, and that tool is Word
+* Creating a template is simply creating a Word document
+* The generated document is created directly from the template, which will contain
+all the files and settings required by that version of Word. To upgrade, just
+upgrade the document.
+* WYSWYGA (almost). If you've done .html.erb screens then you know what I mean.
+Do some of the heavy-lifting inside your objects of controller and keep the
+template light
 
 ## Lean Product Development
 When you want to generate a pdf or Word document populated with data then the
