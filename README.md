@@ -9,15 +9,26 @@ UK for the past 13 years.
 His software has generated over 1 million professional paid-for report documents.
 
 ## Why?
+This is the fifth version that i've written of this and quite frankly I would
+like it to be the last! I've thought long and hard, and this solution is
+stunningly short compared to the previous attempts. Viva ruby!
+
+## Why Word?
+* In a workflow where the generated document needs to remain flexible, e.g. for
+consultancy reports where people are going to add their freeform commentary or
+remove/add sections for individual reports then you can't go straight to pdf
+* I love OpenOffice.org, but my business customers do not. They want to use a
+familiar tool, and that tool is Word
+
+## Lean Product Development
 When you want to generate a pdf or Word document populated with data then the
 normal method is use of a DSL to specify it in code.
-This can cause a bottleneck at the Developer and be unfriendly to the Product
+This causes a bottleneck at the Developer and be unfriendly to the Product
 Manager trying to create a report.
 Sometimes a preferably approach is to create a template document containing
 markup and mash this with the data.
 
-This gem enables you to write standard ruby erb templating code embedded inside
-Word documents.
+## Don't write your own templating language
 My experience at writing document templaters has shown me that you start by
 inventing your own simple tagging language.
 This gets more complicated as you add more features (e.g. repeating sections)
@@ -26,12 +37,6 @@ However, like writing html.erb pages I would advise that the 'heavy lifting' is
 done in your ruby code and not the front-end...but if you insist, then you can.
 
 All work is done in memory so that processing can be run on a cloud platform.
-
-Word is quite gung-ho at sticking extra xml tags into the document.xml, things
-like marking spelling mistakes (which your tagnames may well look like) or
-retaining whitespace.
-We cope with those by stripping any xml that appears between erb start and end
-tags.
 
 ## Installation
 
