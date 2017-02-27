@@ -8,27 +8,27 @@ require 'zip'
 module Tapir
   module Reports
     class Template
-      attr_accessor :template
-      attr_accessor :content
 
       def initialize(template)
         @template = template
+        # open the template and cache the bits we are interested in, then close
         @zipfile = Zip::File.open(@template)
         @content = @zipfile.read('word/document.xml')
         @relationships = @zipfile.read('word/_rels/document.xml.rels')
         @zipfile.close
       end
 
-      def render(json, content)
-        erb = Template.sanitize(content)
-        ERB.new(erb).result(json.instance_eval { binding })
+      def render(your_binding)
+        erb = Template.to_erb(@content)
+        ERB.new(erb).result(your_binding)
       end
 
-      def self.sanitize(content)
-        # remove all extraneous Word xml tags between erb start and finish
+      def self.to_erb(content)
+        # remove extraneous Word xml tags between erb start and finish
         content.gsub!(/(&lt;%[^%]*%&gt;)/m) { |erb_tag|
           erb_tag.gsub(/(<[^>]*>)/, '')
         }
+        # unescape erb tags
         content.gsub!('&lt;%', '<%')
         content.gsub!('%&gt;', '%>')
         content
@@ -39,14 +39,15 @@ module Tapir
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
         drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]")
         node = drawing.at_xpath("//a:blip/@r:embed")
-        # if nil then it isn't a picture, it's a border box or something
+        # if nil then object is not a picture, it is a border box or something
         nil
         node.value if node
       end
 
       def url(relationship_id)
-        xml = Nokogiri::XML(@relationships)
-        'word/' + xml.at_xpath("//*[@Id='#{relationship_id}']/@Target")
+        relationships = Nokogiri::XML(@relationships)
+        target =  relationships.at_xpath("//*[@Id='#{relationship_id}']/@Target")
+        "word/#{target}"
       end
 
       def url_for(image_name)
@@ -55,29 +56,23 @@ module Tapir
         url(relationship_id(image_name)) # if relationship_id(image_name)
       end
 
-      def output(json_string, image_replacements)
+      def output(your_binding, image_replacements)
         image_replacements2 = {}
         image_replacements.each { |rep|
           url = url_for(rep[0])
           image_replacements2[url] = rep[1] if url != nil
         }
-        begin
-          json = JSON.parse(json_string, object_class: OpenStruct)
-        rescue
-          json = json_string
-        end
         @zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
           @zipfile.entries.each { |entry|
+            out.put_next_entry(entry)
             if 'word/document.xml' == entry.name
-              out.put_next_entry(entry)
-              processed_content = render(json, @content)
-              out.write(processed_content)
+              rendered_document_xml = render(your_binding)
+              out.write(rendered_document_xml)
             elsif image_replacements2.keys.include?(entry.name)
-              out.put_next_entry(entry)
+              # write the alternative image's contents instead of placeholder's
               open(image_replacements2[entry.name]) {|f| out.write(f.read)}
             else
-              out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
             end
           }
@@ -85,10 +80,6 @@ module Tapir
         return buffer.string
       end
 
-      def write_to_file(json_string, image_replacements, output_name)
-        s = output(json_string, image_replacements)
-        File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(s) }
-      end
     end
   end
 end
