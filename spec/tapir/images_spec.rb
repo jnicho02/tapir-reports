@@ -19,9 +19,8 @@ describe Tapir::Reports::Template do
     end
 
     it "should be return a working document" do
-      json_string = '{
-        "@kitten2" : "http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg"
-      }'
+      json_string = {
+      }
       replacements =
         [
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
@@ -32,7 +31,7 @@ describe Tapir::Reports::Template do
     end
 
     it "should complain about missing images" do
-      json_string = '{}'
+      json_string = {}
       replacements =
         [
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
@@ -41,14 +40,16 @@ describe Tapir::Reports::Template do
     end
 
     it "should be okay with extra images" do
-      json_string = '{}'
+      json = {}
       replacements =
         [
           ['@kitten', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_AerialImage.jpg'],
           ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
           ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
         ]
-      template.write_to_file(json_string, replacements, 'alteredimages.docx')
+      s = template.output(json, replacements)
+      output_name = 'alteredimages.docx'
+      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(s) }
     end
 
   end

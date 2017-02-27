@@ -1,14 +1,33 @@
 # Tapir::Reports
 
-This gem is created by report generation professional Jez Nicholson. He has created report builder systems used by environmental consultancies in the UK for the past 13 years. His software has generated over 1 million professional paid-for report documents.
+This gem is created by report generation professional Jez Nicholson.
+He has created report builder systems used by environmental consultancies in the
+UK for the past 13 years.
+His software has generated over 1 million professional paid-for report documents.
 
-When you want to generate a pdf or Word document populated with data then the normal method is use of a DSL to specify it in code. This can cause a bottleneck at the Developer and be unfriendly to the Product Manager trying to create a report. Sometimes a preferably approach is to create a template document containing markup and mash this with the data.
+When you want to generate a pdf or Word document populated with data then the
+normal method is use of a DSL to specify it in code.
+This can cause a bottleneck at the Developer and be unfriendly to the Product
+Manager trying to create a report.
+Sometimes a preferably approach is to create a template document containing
+markup and mash this with the data.
 
-This gem enables you to write standard ruby erb templating code embedded inside Word documents. My experience at writing document templaters has shown me that you start by inventing your own simple tagging language. This gets more complicated as you add more features (e.g. repeating sections) and it is inflexible. However, like writing html pages I would advise that the 'heavy lifting' is done in your ruby code and not the front-end...but if you insist, then you can.
+This gem enables you to write standard ruby erb templating code embedded inside
+Word documents.
+My experience at writing document templaters has shown me that you start by
+inventing your own simple tagging language.
+This gets more complicated as you add more features (e.g. repeating sections)
+and it is inflexible.
+However, like writing html.erb pages I would advise that the 'heavy lifting' is
+done in your ruby code and not the front-end...but if you insist, then you can.
 
 All work is done in memory so that processing can be run on a cloud platform.
 
-Word is quite gung-ho at sticking extra xml tags into the document.xml, things like marking spelling mistakes (which your tagnames may well look like) or retaining whitespace. We cope with those by stripping any xml that appears between erb start and end tags.
+Word is quite gung-ho at sticking extra xml tags into the document.xml, things
+like marking spelling mistakes (which your tagnames may well look like) or
+retaining whitespace.
+We cope with those by stripping any xml that appears between erb start and end
+tags.
 
 ## Installation
 
@@ -28,9 +47,11 @@ Or install it yourself as:
 
 ## Usage
 
-Okay, so this is a very early version and the usage may change. Do not use in anger yet!
+Okay, so this is a very early version and the usage may change.
+Do not use in anger yet!
 
-e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'. Also with text of 'Hello <%= person %>'
+e.g. A Word document with two images with alt text of '@kitten' and '@kitten2'.
+Also with text of 'Hello <%= person %>'
 
 ```
   template = Tapir::Reports::Template.new(File.read('images.docx'))
