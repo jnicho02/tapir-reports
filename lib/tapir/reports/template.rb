@@ -12,10 +12,10 @@ module Tapir
       def initialize(template)
         @template = template
         # open the template and cache the bits we are interested in, then close
-        @zipfile = Zip::File.open(@template)
-        @content = @zipfile.read('word/document.xml')
-        @relationships = @zipfile.read('word/_rels/document.xml.rels')
-        @zipfile.close
+        zipfile = Zip::File.open(@template)
+        @content = zipfile.read('word/document.xml')
+        @relationships = zipfile.read('word/_rels/document.xml.rels')
+        zipfile.close
       end
 
       def render(your_binding)
@@ -62,21 +62,24 @@ module Tapir
           url = url_for(rep[0])
           image_replacements2[url] = rep[1] if url != nil
         }
-        @zipfile = Zip::File.open(@template)
+        zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
-          @zipfile.entries.each { |entry|
-            out.put_next_entry(entry)
-            if 'word/document.xml' == entry.name
+          zipfile.entries.each { |entry|
+            if entry.name == 'word/document.xml'
               rendered_document_xml = render(your_binding)
+              out.put_next_entry(entry)
               out.write(rendered_document_xml)
             elsif image_replacements2.keys.include?(entry.name)
               # write the alternative image's contents instead of placeholder's
+              out.put_next_entry(entry)
               open(image_replacements2[entry.name]) {|f| out.write(f.read)}
             else
+              out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
             end
           }
         }
+        buffer.rewind
         return buffer.string
       end
 

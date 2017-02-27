@@ -16,6 +16,8 @@ describe Tapir::Reports::Template do
     it "should return a working document" do
       s = template.output(binding, [])
 #      expect(s).to include('Hello Jez')
+      output_name = 'mangled_vars.docx'
+      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(s) }
     end
     it "should replace erb variables with bound variable values" do
       s = template.render(binding)
