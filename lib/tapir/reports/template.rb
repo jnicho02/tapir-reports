@@ -38,7 +38,7 @@ module Tapir
         xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
         drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]")
-        node = drawing.at_xpath("//a:blip/@r:embed")
+        node = drawing.at_xpath("//a:blip/@r:embed") if drawing
         # if nil then object is not a picture, it is a border box or something
         nil
         node.value if node
@@ -62,25 +62,25 @@ module Tapir
           url = url_for(rep[0])
           image_replacements2[url] = rep[1] if url != nil
         }
-        zipfile = Zip::File.open(@template)
         buffer = Zip::OutputStream.write_buffer { |out|
+          zipfile = Zip::File.open(@template)
           zipfile.entries.each { |entry|
             if entry.name == 'word/document.xml'
               rendered_document_xml = render(your_binding)
-              out.put_next_entry(entry)
+              out.put_next_entry(entry.name)
               out.write(rendered_document_xml)
             elsif image_replacements2.keys.include?(entry.name)
               # write the alternative image's contents instead of placeholder's
-              out.put_next_entry(entry)
+              out.put_next_entry(entry.name)
               open(image_replacements2[entry.name]) {|f| out.write(f.read)}
             else
               out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
             end
           }
+          zipfile.close
         }
-        buffer.rewind
-        return buffer.string
+        buffer.string
       end
 
     end
