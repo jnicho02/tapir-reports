@@ -38,7 +38,7 @@ module Tapir
         xml = Nokogiri::XML(@content)
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
         drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]")
-        node = drawing.at_xpath("//a:blip/@r:embed") if drawing
+        node = drawing.at_xpath("*//a:blip/@r:embed") if drawing
         # if nil then object is not a picture, it is a border box or something
         nil
         node.value if node
