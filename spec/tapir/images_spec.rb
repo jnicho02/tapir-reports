@@ -11,7 +11,7 @@ describe Tapir::Reports::Template do
     end
 
     it "should return the second kitten relationship_id" do
-#     expect(template.relationship_id('@kitten2')).to eq 'rId5'
+      expect(template.relationship_id('@kitten2')).to eq 'rId5'
     end
 
     it "should return the first kitten url" do
