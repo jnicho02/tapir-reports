@@ -11,9 +11,11 @@ module Tapir
 
       def initialize(template)
         @template = template
-        # open the template and cache the bits we are interested in, then close
-        zipfile = Zip::File.open(@template)
+        # open the template, cache the bits we are interested in, then close
+        template_opened = open(@template)
+        zipfile = Zip::File.open_buffer(template_opened)
         @content = zipfile.read('word/document.xml')
+        puts "content = #{@content}"
         @relationships = zipfile.read('word/_rels/document.xml.rels')
         zipfile.close
       end
@@ -63,7 +65,7 @@ module Tapir
           image_replacements2[url] = rep[1] if url != nil
         }
         buffer = Zip::OutputStream.write_buffer { |out|
-          zipfile = Zip::File.open(@template)
+          zipfile = Zip::File.open_buffer(open(@template))
           zipfile.entries.each { |entry|
             if entry.name == 'word/document.xml'
               rendered_document_xml = render(your_binding)
