@@ -77,7 +77,7 @@ module Tapir
               begin
                 open(image_replacements2[entry.name]) {|f| out.write(f.read)}
               rescue
-                open("lib/tapir/reports/image-not-found.png") {|f| out.write(f.read)}
+                open("https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png") {|f| out.write(f.read)}
               end
             else
               out.put_next_entry(entry.name)
