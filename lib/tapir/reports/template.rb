@@ -74,7 +74,11 @@ module Tapir
             elsif image_replacements2.keys.include?(entry.name)
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
-              open(image_replacements2[entry.name]) {|f| out.write(f.read)}
+              begin
+                open(image_replacements2[entry.name]) {|f| out.write(f.read)}
+              rescue
+                out.write(entry.get_input_stream.read)
+              end
             else
               out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
