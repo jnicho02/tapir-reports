@@ -19,7 +19,11 @@ module Tapir
           'word/document.xml' => zipfile.read('word/document.xml'),
           'docProps/core.xml' => zipfile.read('docProps/core.xml'),
         }
-        @files['word/footer2.xml'] = zipfile.read('word/footer2.xml') if zipfile.find_entry('word/footer2.xml')
+        zipfile.each { |e|
+          if e.to_s.include?('header') || e.to_s.include?('footer')
+            @files[e] = zipfile.read(e)
+          end
+        }
         zipfile.close
       end
 
