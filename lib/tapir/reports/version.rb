@@ -1,5 +1,5 @@
 module Tapir
   module Reports
-    VERSION = "0.3.4pre"
+    VERSION = "1.0.1"
   end
 end
