@@ -20,14 +20,11 @@ module Tapir
           'docProps/core.xml' => zipfile.read('docProps/core.xml'),
         }
         zipfile.glob(File.join("**", "header*.xml")).each { |e|
-          puts "*** glob #{e.name}"
           @files[e.name] = zipfile.read(e)
         }
         zipfile.glob(File.join("**", "footer*.xml")).each { |e|
-          puts "*** glob #{e.name}"
           @files[e.name] = zipfile.read(e)
         }
-        puts "#{@files.keys}"
         zipfile.close
       end
 
@@ -79,7 +76,6 @@ module Tapir
           zipfile = Zip::File.open_buffer(open(@template))
           zipfile.entries.each { |entry|
             if @files.keys.include?(entry.name)
-              puts "*** render #{entry.name}"
               rendered_document_xml = render(your_binding, entry.name)
               out.put_next_entry(entry.name)
               out.write(rendered_document_xml)
