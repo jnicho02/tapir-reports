@@ -48,7 +48,7 @@ module Tapir
       def relationship_id(image_name)
         xml = Nokogiri::XML(@files['word/document.xml'])
         xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
-        drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}']]")
+        drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}' or @descr='#{image_name}']]")
         node = drawing.at_xpath("*//a:blip/@r:embed") if drawing
         # if nil then object is not a picture, it is a border box or something
         nil
