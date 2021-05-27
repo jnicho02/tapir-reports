@@ -15,11 +15,11 @@ describe Tapir::Reports::Template do
 
   context 'given a document with variable tags in' do
     let(:template) { Tapir::Reports::Template.new(fixture('variables.docx')) }
-    it 'should return a working document' do
-      s = template.output(binding, [])
-      output_name = 'mangled_vars2.docx'
-      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", 'wb') { |f| f.write(s) }
-    end
+#    it 'should return a working document' do
+#      s = template.output(binding, [])
+#      output_name = 'mangled_vars2.docx'
+#      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", 'wb') { |f| f.write(s) }
+#    end
     it 'should replace erb variables with bound variable values' do
       s = template.render(binding)
       expect(s).to include('Hello Jez')
@@ -77,11 +77,11 @@ describe Tapir::Reports::Template do
 
   context 'given an online document with variable tags in' do
     let(:template) { Tapir::Reports::Template.new('https://github.com/jnicho02/tapir-reports/blob/master/fixtures/variables.docx?raw=true') }
-    it 'should return a working document' do
-      s = template.output(binding, [])
-      output_name = 'mangled_vars.docx'
-      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", 'wb') { |f| f.write(s) }
-    end
+#    it 'should return a working document' do
+#      s = template.output(binding, [])
+#      output_name = 'mangled_vars.docx'
+#      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", 'wb') { |f| f.write(s) }
+#    end
     it 'should replace erb variables with bound variable values' do
       s = template.render(binding)
       expect(s).to include('Hello Jez')
