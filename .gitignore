@@ -12,4 +12,4 @@ fixtures/mangled*.docx
 
 fixtures/altered-images.docx
 
-fixtures/~$*.docx
+fixtures/*.docx
