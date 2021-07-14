@@ -8,7 +8,6 @@ require 'zip'
 module Tapir
   module Reports
     class Template
-
       def initialize(template)
         @template = template
         # open the template, cache the bits we are interested in, then close
@@ -16,21 +15,22 @@ module Tapir
         zipfile = Zip::File.open_buffer(template_opened)
         @relationships = zipfile.read('word/_rels/document.xml.rels')
         @files = {
-          'word/document.xml' => zipfile.read('word/document.xml'),
-          'docProps/core.xml' => zipfile.read('docProps/core.xml'),
+          'word/document.xml' => zipfile.read('word/document.xml')
         }
-        zipfile.glob(File.join("**", "header*.xml")).each { |e|
+        unless zipfile.find_entry('docProps/core.xml').nil?
+          @files['docProps/core.xml'] = zipfile.read('docProps/core.xml')
+        end
+        zipfile.glob(File.join('**', 'header*.xml')).each { |e|
           @files[e.name] = zipfile.read(e)
         }
-        zipfile.glob(File.join("**", "footer*.xml")).each { |e|
+        zipfile.glob(File.join('**', 'footer*.xml')).each { |e|
           @files[e.name] = zipfile.read(e)
         }
         zipfile.close
       end
 
-      def content
-        key='word/document.xml'
-        @files[key]
+      def contents
+        @files['word/document.xml']
       end
 
       def render(your_binding, key='word/document.xml')
@@ -62,7 +62,7 @@ module Tapir
 
       def url(relationship_id)
         relationships = Nokogiri::XML(@relationships)
-        target =  relationships.at_xpath("//*[@Id='#{relationship_id}']/@Target")
+        target = relationships.at_xpath("//*[@Id='#{relationship_id}']/@Target")
         "word/#{target}"
       end
 
