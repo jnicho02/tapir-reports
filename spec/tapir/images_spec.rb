@@ -48,7 +48,7 @@ describe Tapir::Reports::Template do
         ]
       s = template.output(binding, replacements)
       output_name = 'mangled_images.docx'
-      File.open("/Users/jeznicholson/Projects/tapir-reports/fixtures/#{output_name}", "wb") {|f| f.write(s) }
+#      File.open("fixtures/#{output_name}", "wb") {|f| f.write(s) }
     end
 
   end
