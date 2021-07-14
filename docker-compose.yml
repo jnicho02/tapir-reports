@@ -1,0 +1,39 @@
+version: '3.8'
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: ./.dockerdev/Dockerfile
+    args:
+      RUBY_VERSION: '2.6.6'
+#      BUNDLER_VERSION: '2.0.2'
+  environment: &env
+    NODE_ENV: development
+  image: tapir-reports-dev:0.0.3
+  tmpfs:
+    - /tmp
+
+x-backend: &backend
+  <<: *app
+  stdin_open: true
+  tty: true
+  volumes:
+    - ./webapp:/opt/webapp
+    - .:/app:cached
+    - bundle:/usr/local/bundle
+  environment:
+    <<: *env
+    HISTFILE: /app/log/.bash_history
+    EDITOR: vi
+
+services:
+  runner:
+    <<: *backend
+    command: /bin/bash
+    ports:
+      - '3002:3002'
+#      - '3000:3000'
+#      - '3002:3002'
+
+volumes:
+  bundle:

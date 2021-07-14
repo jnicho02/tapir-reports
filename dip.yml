@@ -1,0 +1,39 @@
+version: '7.1'
+
+compose:
+  files:
+    - docker-compose.yml
+
+interaction:
+  bash:
+    description: Run an arbitrary script within a container (or open a shell without deps)
+    service: runner
+    command: /bin/bash
+    compose_run_options: [no-deps]
+
+  bundle:
+    description: Run Bundler commands
+    service: runner
+    command: bundle
+    compose_run_options: [no-deps]
+
+  rspec:
+    description: Run Rails tests
+    service: runner
+    command: bundle exec rspec
+
+  rubocop:
+    description: Run Rubocop
+    service: runner
+    command: bundle exec rubocop
+    compose_run_options: [no-deps]
+
+  sh:
+    description: Open a Bash shell within a Rails container (with dependencies up)
+    service: runner
+    command: /bin/bash
+
+provision:
+  - dip compose down --volumes
+  - dip compose up
+  - dip bundle install
