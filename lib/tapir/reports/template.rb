@@ -42,7 +42,7 @@ module Tapir
         # remove extraneous Word xml tags between erb start and finish
         # enable anti-nil syntax 'xyz&.attr'
         content.gsub!(/(&lt;%[^%]*%[^&]*&gt;)/m) { |erb_tag|
-          erb_tag.gsub(/(<[^>]*>)/, '').gsub('&amp;', '&')
+          erb_tag.gsub(/(<[^>]*>)/, '').gsub('&amp;', '&').gsub('‘', "'")
         }
         # unescape erb tags
         content.gsub!('&lt;%', '<%')
