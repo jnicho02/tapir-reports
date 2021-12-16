@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Tapir::Reports::Template do
-  let(:kitten_photo){ fixture('193px-Stray_kitten_Rambo001.jpg') }
+  let(:kitten_photo) { fixture('193px-Stray_kitten_Rambo001.jpg') }
 
   context 'given a document with images in' do
     let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
@@ -19,36 +19,32 @@ describe Tapir::Reports::Template do
     end
 
     it 'should be return a working document' do
-      json_string = {
-      }
       replacements =
         [
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
-          ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
+          ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg']
         ]
       template.output(binding, replacements)
     end
 
     it 'should complain about missing images' do
-      json_string = {}
       replacements =
         [
-          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
+          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')]
         ]
       template.output(binding, replacements)
     end
 
     it 'should be okay with extra images' do
-      json = {}
       replacements =
         [
           ['@kitten', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_AerialImage.jpg'],
           ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg'],
-          ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlanxxxx.jpg'],
+          ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlanxxxx.jpg']
         ]
       s = template.output(binding, replacements)
       output_name = 'mangled_images.docx'
-#      File.open("fixtures/#{output_name}", "wb") {|f| f.write(s) }
+      # File.open("fixtures/#{output_name}", "wb") {|f| f.write(s) }
     end
   end
 end
