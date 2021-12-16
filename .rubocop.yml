@@ -1,0 +1,66 @@
+Layout/LineLength:
+  Enabled: false
+  Max: 150
+Lint/DuplicateBranch:
+  Enabled: false
+Lint/DuplicateMethods:
+  Enabled: false
+Lint/InterpolationCheck:
+  Enabled: false
+Lint/RescueException:
+  Enabled: false
+Lint/SelfAssignment:
+  Enabled: false
+Lint/ShadowedArgument:
+  Enabled: false
+Lint/SuppressedException:
+  Enabled: false
+Lint/UselessAssignment:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/BlockLength:
+  Max: 180
+Metrics/ClassLength:
+  Max: 500
+Metrics/CyclomaticComplexity:
+  Max: 35
+Metrics/MethodLength:
+  Enabled: false
+  Max: 20
+Metrics/PerceivedComplexity:
+  Enabled: false
+Naming/VariableName:
+  Enabled: false
+Naming/VariableNumber:
+  Enabled: false
+Security/Open:
+  Enabled: false
+Style/AndOr:
+  Enabled: false
+Style/BlockComments:
+  Enabled: false
+Style/ClassVars:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/HashEachMethods:
+  Enabled: false
+Style/HashTransformKeys:
+  Enabled: false
+Style/HashTransformValues:
+  Enabled: false
+Style/MultilineIfModifier:
+  Enabled: false
+Style/OptionalBooleanParameter:
+  Enabled: false
+Style/RescueStandardError:
+  Enabled: false
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'fixtures/*'
+    - 'data/**/*'
+    - 'Rakefile'
+    - '*.gemspec'
+  NewCops: enable
