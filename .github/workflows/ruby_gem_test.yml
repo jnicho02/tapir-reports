@@ -13,8 +13,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
       - name: Install dependencies
         run: bundle install
-#      - name: Rubocop
-#        run: rubocop
+      - name: Rubocop
+        run: rubocop
       - name: Run rspec
         run: bundle exec rspec
 #      - name: Publish to RubyGems

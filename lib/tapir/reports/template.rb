@@ -7,6 +7,7 @@ require 'zip'
 
 module Tapir
   module Reports
+    # a template in Word docx format
     class Template
       def initialize(template)
         @template = template
@@ -17,15 +18,9 @@ module Tapir
         @files = {
           'word/document.xml' => zipfile.read('word/document.xml')
         }
-        unless zipfile.find_entry('docProps/core.xml').nil?
-          @files['docProps/core.xml'] = zipfile.read('docProps/core.xml')
-        end
-        zipfile.glob(File.join('**', 'header*.xml')).each { |e|
-          @files[e.name] = zipfile.read(e)
-        }
-        zipfile.glob(File.join('**', 'footer*.xml')).each { |e|
-          @files[e.name] = zipfile.read(e)
-        }
+        @files['docProps/core.xml'] = zipfile.read('docProps/core.xml') unless zipfile.find_entry('docProps/core.xml').nil?
+        zipfile.glob(File.join('**', 'header*.xml')).each { |e| @files[e.name] = zipfile.read(e) }
+        zipfile.glob(File.join('**', 'footer*.xml')).each { |e| @files[e.name] = zipfile.read(e) }
         zipfile.close
       end
 
@@ -33,7 +28,7 @@ module Tapir
         @files['word/document.xml']
       end
 
-      def render(your_binding, key='word/document.xml')
+      def render(your_binding, key = 'word/document.xml')
         erb = Template.to_erb(@files[key])
         ERB.new(erb).result(your_binding)
       end
@@ -41,9 +36,9 @@ module Tapir
       def self.to_erb(content)
         # remove extraneous Word xml tags between erb start and finish
         # enable anti-nil syntax 'xyz&.attr'
-        content.gsub!(/(&lt;%[^%]*%[^&]*&gt;)/m) { |erb_tag|
+        content.gsub!(/(&lt;%[^%]*%[^&]*&gt;)/m) do |erb_tag|
           erb_tag.gsub(/(<[^>]*>)/, '').gsub('&amp;', '&').gsub('‘', "'")
-        }
+        end
         # unescape erb tags
         content.gsub!('&lt;%', '<%')
         content.gsub!('%&gt;', '%>')
@@ -52,7 +47,7 @@ module Tapir
 
       # This is still pretty dirty, but you get a Word transformation as html.erb
       def self.to_bootstrap_erb(content, replacements = [])
-        content = self.to_erb(content)
+        content = to_erb(content)
         content.gsub!('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', '<!DOCTYPE html>')
         content.gsub!('w:document', 'html')
         content.gsub!('w:body', 'body')
@@ -64,17 +59,17 @@ module Tapir
           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         </head>')
         content.gsub!('<body>', '<body><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>')
-        content = self.strip_tag(content, 'mc:AlternateContent')
-        content = self.strip_tag(content, 'wps:bodyPr')
-        content = self.strip_tag(content, 'w:rPr')
-        content = self.strip_tag(content, 'w:sectPr')
-        content = self.strip_tag(content, 'w:tblPr')
-        content = self.strip_tag(content, 'w:trPr')
-        content = self.strip_tag(content, 'w:tcPr')
-        content = self.strip_tag(content, 'w:tblGrid')
-        content = self.replace_tag(content, 'w:drawing', replacements)
-        content = self.strip_tag(content, 'w:drawing')
-        content = self.strip_tag(content, 'w:pict')
+        content = strip_tag(content, 'mc:AlternateContent')
+        content = strip_tag(content, 'wps:bodyPr')
+        content = strip_tag(content, 'w:rPr')
+        content = strip_tag(content, 'w:sectPr')
+        content = strip_tag(content, 'w:tblPr')
+        content = strip_tag(content, 'w:trPr')
+        content = strip_tag(content, 'w:tcPr')
+        content = strip_tag(content, 'w:tblGrid')
+        content = replace_tag(content, 'w:drawing', replacements)
+        content = strip_tag(content, 'w:drawing')
+        content = strip_tag(content, 'w:pict')
         close_div = '</div>'.freeze
         content.gsub!(/<w:p(\s[^>]*>|>)/, '<w:p>')
         content.gsub!(/<w:r(\s[^>]*>|>)/, '<w:r>')
@@ -94,7 +89,7 @@ module Tapir
         content.gsub!(%r{<w:p><w:pPr><w:pStyle w:val="Heading4"/>}, '<p class="h4"><w:pPr>')
         content.gsub!('<w:p>', '<p>')
         content.gsub!('</w:p>', '</p>')
-        content = self.strip_tag(content, 'w:pPr')
+        content = strip_tag(content, 'w:pPr')
         content.gsub!('<w:r>', '')
         content.gsub!('</w:r>', '')
         content.gsub!('<w:tc>', '<div class="col-auto">')
@@ -107,24 +102,22 @@ module Tapir
         content.gsub!('<w:sdtEndPr/>', '')
         content.gsub!('<w:br w:type="page"/>', '** page break **')
         content.gsub!('<w15:appearance w15:val="hidden"/>', '')
-        content.gsub!(/<w:id [^>]*\/>/, '')
-        content = self.remove_tag(content, 'w:sdt')
-        content = self.remove_tag(content, 'w:sdtContent')
-        content = self.remove_tag(content, 'w:sdtPr')
-        content = self.remove_tag(content, 'w:placeholder')
-        content.gsub!(/<w:docPart [^>]*\/>/, '')
-        puts content
+        content.gsub!(%r{<w:id [^>]*/>}, '')
+        content = remove_tag(content, 'w:sdt')
+        content = remove_tag(content, 'w:sdtContent')
+        content = remove_tag(content, 'w:sdtPr')
+        content = remove_tag(content, 'w:placeholder')
+        content.gsub!(%r{<w:docPart [^>]*/>}, '')
         content
       end
 
       def relationship_id(image_name)
         xml = Nokogiri::XML(@files['word/document.xml'])
-        xml.root.add_namespace('xmlns:a','http://schemas.openxmlformats.org/drawingml/2006/main')
+        xml.root.add_namespace('xmlns:a', 'http://schemas.openxmlformats.org/drawingml/2006/main')
         drawing = xml.at_xpath("//w:drawing[*/wp:docPr[@title='#{image_name}' or @descr='#{image_name}']]")
-        node = drawing.at_xpath("*//a:blip/@r:embed") if drawing
+        node = drawing.at_xpath('*//a:blip/@r:embed') if drawing
         # if nil then object is not a picture, it is a border box or something
-        nil
-        node.value if node
+        node&.value
       end
 
       def self.replace_tag(content, tag, replacements)
@@ -182,7 +175,6 @@ module Tapir
       end
 
       def url_for(image_name)
-        nil
         url(relationship_id(image_name)) # if relationship_id(image_name)
       end
 
@@ -190,7 +182,7 @@ module Tapir
         image_replacements2 = {}
         image_replacements.each do |rep|
           url = url_for(rep[0])
-          image_replacements2[url] = rep[1] if url != nil
+          image_replacements2[url] = rep[1] unless url.nil?
         end
         buffer = Zip::OutputStream.write_buffer do |out|
           zipfile = Zip::File.open_buffer(open(@template))
