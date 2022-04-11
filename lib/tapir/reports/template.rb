@@ -30,7 +30,7 @@ module Tapir
 
       def render(your_binding, key = 'word/document.xml')
         erb = Template.to_erb(@files[key])
-        ERB.new(erb).result(your_binding)
+        ERB.new(erb, trim_mode: '-').result(your_binding)
       end
 
       def self.to_erb(content)
