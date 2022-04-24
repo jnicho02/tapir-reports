@@ -24,15 +24,17 @@ describe Tapir::Reports::Template do
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
           ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg']
         ]
-      template.output(binding, replacements)
+      s = template.output(binding, replacements)
+      File.binwrite('fixtures/all_is_fine.docx', s)
     end
 
-    it 'should complain about missing images' do
+    it 'should be work for pngs' do
       replacements =
         [
-          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')]
+          ['@kitten', fixture('PNG_transparency_demonstration_1.png')]
         ]
-      template.output(binding, replacements)
+      s = template.output(binding, replacements)
+      File.binwrite('fixtures/all_is_fine_png.docx', s)
     end
 
     it 'should be okay with extra images' do
@@ -43,8 +45,16 @@ describe Tapir::Reports::Template do
           ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlanxxxx.jpg']
         ]
       s = template.output(binding, replacements)
-      output_name = 'mangled_images.docx'
-      # File.open("fixtures/#{output_name}", "wb") {|f| f.write(s) }
+      File.binwrite('fixtures/extra_images.docx', s)
+    end
+
+    it 'should be okay about missing images' do
+      replacements =
+        [
+          ['@kitten', fixture('193px-Stray_kitten_DoesNotExist.jpg')]
+        ]
+      s = template.output(binding, replacements)
+      File.binwrite('fixtures/missing_image.docx', s)
     end
   end
 end
