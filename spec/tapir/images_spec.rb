@@ -24,9 +24,18 @@ describe Tapir::Reports::Template do
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
           ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg']
         ]
-        s = template.output(binding, replacements)
-        File.binwrite('fixtures/all_is_fine.docx', s)
-      end
+      s = template.output(binding, replacements)
+      File.binwrite('fixtures/all_is_fine.docx', s)
+    end
+
+    it 'should be work for pngs' do
+      replacements =
+        [
+          ['@kitten', fixture('PNG_transparency_demonstration_1.png')]
+        ]
+      s = template.output(binding, replacements)
+      File.binwrite('fixtures/all_is_fine_png.docx', s)
+    end
 
     it 'should be okay with extra images' do
       replacements =

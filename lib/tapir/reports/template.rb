@@ -197,8 +197,9 @@ module Tapir
               begin
                 URI.open(image_replacements2[entry.name]) do |f|
                   data = f.read
-                  puts data[0, 3].bytes
-                  if data[0, 3].bytes == [255, 216, 255]
+                  signature = data[0, 3].bytes
+                  puts "[#{signature[0]}, #{signature[1]}, #{signature[2]}]"
+                  if [[255, 216, 255], [137, 80, 78]].include?(signature)
                     out.write(data)
                   else
                     URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
