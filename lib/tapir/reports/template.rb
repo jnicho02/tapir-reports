@@ -12,7 +12,7 @@ module Tapir
       def initialize(template)
         @template = template
         # open the template, cache the bits we are interested in, then close
-        template_opened = open(@template)
+        template_opened = URI.open(@template)
         zipfile = Zip::File.open_buffer(template_opened)
         @relationships = zipfile.read('word/_rels/document.xml.rels')
         @files = {
@@ -185,7 +185,7 @@ module Tapir
           image_replacements2[url] = rep[1] unless url.nil?
         end
         buffer = Zip::OutputStream.write_buffer do |out|
-          zipfile = Zip::File.open_buffer(open(@template))
+          zipfile = Zip::File.open_buffer(URI.open(@template))
           zipfile.entries.each do |entry|
             if @files.keys.include?(entry.name)
               rendered_document_xml = render(your_binding, entry.name)
@@ -195,9 +195,16 @@ module Tapir
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
               begin
-                open(image_replacements2[entry.name]) { |f| out.write(f.read) }
+                URI.open(image_replacements2[entry.name]) do |f|
+                  data = f.read
+                  if data[0,3].bytes == [255, 216, 255]
+                    out.write(f.read)
+                  else
+                    URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |f| out.write(f.read) }
+                  end
+                end
               rescue
-                open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |f| out.write(f.read) }
+                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |f| out.write(f.read) }
               end
             else
               out.put_next_entry(entry.name)

@@ -43,8 +43,16 @@ describe Tapir::Reports::Template do
           ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlanxxxx.jpg']
         ]
       s = template.output(binding, replacements)
-      output_name = 'mangled_images.docx'
-      # File.open("fixtures/#{output_name}", "wb") {|f| f.write(s) }
+      File.open("fixtures/mangled_images.docx", "wb") { |f| f.write(s) }
+    end
+
+    it 'should be okay about missing images' do
+      replacements =
+        [
+          ['@kitten', fixture('193px-Stray_kitten_DoesNotExist.jpg']
+        ]
+      s = template.output(binding, replacements)
+      File.open('fixtures/missing_image.docx', "wb") { |f| f.write(s) }
     end
   end
 end
