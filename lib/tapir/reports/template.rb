@@ -198,7 +198,6 @@ module Tapir
                 URI.open(image_replacements2[entry.name]) do |f|
                   data = f.read
                   signature = data[0, 3].bytes
-                  puts "[#{signature[0]}, #{signature[1]}, #{signature[2]}]"
                   if [[255, 216, 255], [137, 80, 78]].include?(signature)
                     out.write(data)
                   else
