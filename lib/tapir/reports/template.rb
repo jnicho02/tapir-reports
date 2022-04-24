@@ -197,14 +197,14 @@ module Tapir
               begin
                 URI.open(image_replacements2[entry.name]) do |f|
                   data = f.read
-                  if data[0,3].bytes == [255, 216, 255]
+                  if data[0, 3].bytes == [255, 216, 255]
                     out.write(f.read)
                   else
-                    URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |f| out.write(f.read) }
+                    URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
                   end
                 end
               rescue
-                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |f| out.write(f.read) }
+                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             else
               out.put_next_entry(entry.name)

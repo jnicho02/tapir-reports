@@ -4,7 +4,8 @@ describe Tapir::Reports::Template do
   let(:kitten_photo) { fixture('193px-Stray_kitten_Rambo001.jpg') }
 
   context 'given a document with images in' do
-    let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
+    # let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
+    let(:template) { Tapir::Reports::Template.new(fixture('FloodSmart_Standard_Jan2022_v1.1.docx')) }
 
     it 'should return the first kitten relationship_id' do
       expect(template.relationship_id('@kitten')).to eq 'rId4'
@@ -49,7 +50,7 @@ describe Tapir::Reports::Template do
     it 'should be okay about missing images' do
       replacements =
         [
-          ['@kitten', fixture('193px-Stray_kitten_DoesNotExist.jpg']
+          ['@kitten', fixture('193px-Stray_kitten_DoesNotExist.jpg')]
         ]
       s = template.output(binding, replacements)
       File.open('fixtures/missing_image.docx', "wb") { |f| f.write(s) }
