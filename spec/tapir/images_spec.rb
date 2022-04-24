@@ -4,8 +4,7 @@ describe Tapir::Reports::Template do
   let(:kitten_photo) { fixture('193px-Stray_kitten_Rambo001.jpg') }
 
   context 'given a document with images in' do
-    # let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
-    let(:template) { Tapir::Reports::Template.new(fixture('FloodSmart_Standard_Jan2022_v1.1.docx')) }
+    let(:template) { Tapir::Reports::Template.new(fixture('images.docx')) }
 
     it 'should return the first kitten relationship_id' do
       expect(template.relationship_id('@kitten')).to eq 'rId4'
@@ -25,16 +24,9 @@ describe Tapir::Reports::Template do
           ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')],
           ['@kitten2', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlan.jpg']
         ]
-      template.output(binding, replacements)
-    end
-
-    it 'should complain about missing images' do
-      replacements =
-        [
-          ['@kitten', fixture('193px-Stray_kitten_Rambo001.jpg')]
-        ]
-      template.output(binding, replacements)
-    end
+        s = template.output(binding, replacements)
+        File.binwrite('fixtures/all_is_fine.docx', s)
+      end
 
     it 'should be okay with extra images' do
       replacements =
@@ -44,7 +36,7 @@ describe Tapir::Reports::Template do
           ['@kitten3', 'http://storage.googleapis.com/geosmart-orders/51402/Maps/51402_SitePlanxxxx.jpg']
         ]
       s = template.output(binding, replacements)
-      File.open("fixtures/mangled_images.docx", "wb") { |f| f.write(s) }
+      File.binwrite('fixtures/extra_images.docx', s)
     end
 
     it 'should be okay about missing images' do
@@ -53,7 +45,7 @@ describe Tapir::Reports::Template do
           ['@kitten', fixture('193px-Stray_kitten_DoesNotExist.jpg')]
         ]
       s = template.output(binding, replacements)
-      File.open('fixtures/missing_image.docx', "wb") { |f| f.write(s) }
+      File.binwrite('fixtures/missing_image.docx', s)
     end
   end
 end
