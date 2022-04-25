@@ -134,7 +134,7 @@ module Tapir
 
             found = true
             img_tag = "<img src='#{r[1]}' height=200 alt='#{r[0]}'/>"
-            puts "found #{look_for}, inserting #{img_tag}"
+            # puts "found #{look_for}, inserting #{img_tag}"
             content = up_to_start_tag + img_tag + after_close_tag
           end
           content = up_to_start_tag + after_close_tag unless found
@@ -188,12 +188,12 @@ module Tapir
           zipfile = Zip::File.open_buffer(URI.open(@template))
           zipfile.entries.each do |entry|
             if @files.keys.include?(entry.name)
-              puts("rendering #{entry.name}")
+              # puts("rendering #{entry.name}")
               rendered_document_xml = render(your_binding, entry.name)
               out.put_next_entry(entry.name)
               out.write(rendered_document_xml)
             elsif image_replacements2.keys.include?(entry.name)
-              puts("replacing #{entry.name}")
+              # puts("replacing #{entry.name}")
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
               begin
@@ -210,11 +210,12 @@ module Tapir
                 URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             else
-              puts("writing #{entry.name} as-is")
+              # puts("writing #{entry.name} as-is")
               out.put_next_entry(entry.name)
               begin
                 out.write(entry.get_input_stream.read)
               rescue
+                puts "error. Cannot write #{entry.name} as-is"
                 URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             end
