@@ -212,7 +212,11 @@ module Tapir
             else
               puts("writing #{entry.name} as-is")
               out.put_next_entry(entry.name)
-              out.write(entry.get_input_stream.read)
+              begin
+                out.write(entry.get_input_stream.read)
+              rescue
+                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+              end
             end
           end
           zipfile.close
