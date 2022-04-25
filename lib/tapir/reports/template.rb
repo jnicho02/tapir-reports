@@ -12,7 +12,7 @@ module Tapir
       def initialize(template)
         @template = template
         # open the template, cache the bits we are interested in, then close
-        template_opened = URI.open(@template)
+        template_opened = open(@template)
         zipfile = Zip::File.open_buffer(template_opened)
         @relationships = zipfile.read('word/_rels/document.xml.rels')
         @files = {
@@ -185,7 +185,7 @@ module Tapir
           image_replacements2[url] = rep[1] unless url.nil?
         end
         buffer = Zip::OutputStream.write_buffer do |out|
-          zipfile = Zip::File.open_buffer(URI.open(@template))
+          zipfile = Zip::File.open_buffer(open(@template))
           zipfile.entries.each do |entry|
             if @files.keys.include?(entry.name)
               rendered_document_xml = render(your_binding, entry.name)
@@ -195,17 +195,17 @@ module Tapir
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
               begin
-                URI.open(image_replacements2[entry.name]) do |f|
+                open(image_replacements2[entry.name]) do |f|
                   data = f.read
                   signature = data[0, 3].bytes
                   if [[255, 216, 255], [137, 80, 78]].include?(signature)
                     out.write(data)
                   else
-                    URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+                    open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
                   end
                 end
               rescue
-                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+                open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             else
               out.put_next_entry(entry.name)
