@@ -188,10 +188,12 @@ module Tapir
           zipfile = Zip::File.open_buffer(URI.open(@template))
           zipfile.entries.each do |entry|
             if @files.keys.include?(entry.name)
+              puts("rendering #{entry.name}")
               rendered_document_xml = render(your_binding, entry.name)
               out.put_next_entry(entry.name)
               out.write(rendered_document_xml)
             elsif image_replacements2.keys.include?(entry.name)
+              puts("replacing #{entry.name}")
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
               begin
@@ -208,6 +210,7 @@ module Tapir
                 URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             else
+              puts("writing #{entry.name} as-is")
               out.put_next_entry(entry.name)
               out.write(entry.get_input_stream.read)
             end
