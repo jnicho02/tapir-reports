@@ -12,7 +12,7 @@ module Tapir
       def initialize(template)
         @template = template
         # open the template, cache the bits we are interested in, then close
-        template_opened = open(@template)
+        template_opened = URI.open(@template)
         zipfile = Zip::File.open_buffer(template_opened)
         @relationships = zipfile.read('word/_rels/document.xml.rels')
         @files = {
@@ -134,7 +134,6 @@ module Tapir
 
             found = true
             img_tag = "<img src='#{r[1]}' height=200 alt='#{r[0]}'/>"
-            puts "found #{look_for}, inserting #{img_tag}"
             content = up_to_start_tag + img_tag + after_close_tag
           end
           content = up_to_start_tag + after_close_tag unless found
@@ -185,7 +184,7 @@ module Tapir
           image_replacements2[url] = rep[1] unless url.nil?
         end
         buffer = Zip::OutputStream.write_buffer do |out|
-          zipfile = Zip::File.open_buffer(open(@template))
+          zipfile = Zip::File.open_buffer(URI.open(@template))
           zipfile.entries.each do |entry|
             if @files.keys.include?(entry.name)
               rendered_document_xml = render(your_binding, entry.name)
@@ -195,21 +194,26 @@ module Tapir
               # write the alternative image's contents instead of placeholder's
               out.put_next_entry(entry.name)
               begin
-                open(image_replacements2[entry.name]) do |f|
+                URI.open(image_replacements2[entry.name]) do |f|
                   data = f.read
                   signature = data[0, 3].bytes
                   if [[255, 216, 255], [137, 80, 78]].include?(signature)
                     out.write(data)
                   else
-                    open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+                    URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
                   end
                 end
               rescue
-                open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
               end
             else
               out.put_next_entry(entry.name)
-              out.write(entry.get_input_stream.read)
+              begin
+                out.write(entry.get_input_stream.read)
+              rescue
+                puts "error. Cannot write #{entry.name} as-is"
+                URI.open('https://github.com/jnicho02/tapir-reports/raw/master/lib/tapir/reports/image-not-found.png') { |not_found| out.write(not_found.read) }
+              end
             end
           end
           zipfile.close
